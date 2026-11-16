@@ -127,9 +127,5 @@ These are not part of v1. Do not build them unless asked.
 - **Audio only.** Never record video.
 - **Do not assume anything about the real microphone hardware.** Use test mode until it is validated.
 - **Be careful with data.** Never overwrite an existing podcast folder. Sanitize titles for file names and separate duplicates.
-- **If you edit the report or the Proje Adımları doc:**
-  - Write in Turkish, keeping English technical terms as is.
-  - Tone: professional, plain, direct.
-  - No em dashes. No tables, unless absolutely necessary.
-  - Calibri, numbered headings, one blue accent color for headings, A4 with standard margins.
-  - Edit the existing .docx directly and change only what was requested. The team also edits these files by hand, so never regenerate them from scratch.
+- No em dashes.
+- No tables unless absolutely necessary.
