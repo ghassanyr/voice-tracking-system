@@ -176,4 +176,4 @@ These are not part of v1.
 
 ## Working with AI agents
 
-Agents working on this project should read [AGENTS.md](AGENTS.md) first.
+Agents working on this project should read [AGENTS.md] first.
