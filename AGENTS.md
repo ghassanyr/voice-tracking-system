@@ -1,9 +1,19 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Agent instructions
 
-## This is NOT the Next.js you know
+Read [README.md] first. It describes the project, its v1 scope, the speaker detection design and the known risks. This file holds the rules for working on it.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## Working rules
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+- **Do not assume, Ask.** If something is unclear or not covered in the README, ask the team before choosing for them.
+- **Stay inside the v1 scope.** Do not add accounts, a database, transcription, Zod or automated tests. Do not add features beyond what is described in the README.
+- **Ask before adding a dependency.** Prefer the browser's built in APIs and small libraries.
+- **Keep the strategies interchangeable.** Both detection strategies sit behind the same interface and share the same tolerances. Do not special case one of them in the stopwatch or the UI.
+- **Do not hardcode configurable values.** Tolerances, the yellow threshold, sensitivity and the other settings live in settings.json.
+- **Never turn browser audio processing on.** Echo cancellation, noise suppression and auto-gain stay off.
+- **Audio only.** Never record video.
+- **Do not assume anything about the real microphone hardware.** Use test mode until it is validated.
+- **Be careful with data.** Never overwrite an existing podcast folder. Sanitize titles for file names and separate duplicates.
 
-<!-- END:nextjs-agent-rules -->
+## Writing style
+
+- No em dashes.

@@ -2,34 +2,64 @@
 
 A local web app that keeps podcast guests on time. A host and one guest each wear a microphone. The app detects who is speaking, runs a stopwatch only while the guest speaks, and shows it next to the target time for the current question. Both people watch one shared screen.
 
-This README is the starting context for anyone working on the project. It describes the intended design.
+## Status
 
-## Scope of v1
+In early development. The application skeleton (Next.js, TypeScript, Tailwind CSS) is in place and builds. The features below are planned for v1 and are not built yet.
 
-In scope:
+## Getting started
 
-- One host and one guest.
-- Turkish podcasts.
-- Runs locally on a standard CPU only laptop.
-- Audio recording (audio only, no video).
+### Prerequisites
 
-Out of scope for v1:
+- Node.js
+- pnpm
+- pm2
 
-- Accounts or permissions.
-- Transcription.
-- A database.
-- Automated tests.
-- Zod or other runtime schema validation.
-- More than two speakers.
+### Install and build
 
-## How a session works
+```bash
+pnpm install
+pnpm build
+```
+
+### Development
+
+```bash
+pnpm dev
+```
+
+### Run locally with pm2
+
+The app is served on port 2000.
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+Then open http://localhost:2000.
+
+To stop it, or to remove it from pm2:
+```bash
+pm2 stop voice-tracking-system
+pm2 delete voice-tracking-system
+```
+
+## Features (planned for v1)
+
+- A stopwatch that runs only while the guest speaks, shown next to the target time for the current question.
+- Color feedback: green, then yellow when time is running out, then red when over the target.
+- Automatic speaker detection with two interchangeable strategies, chosen by a guided setup check.
+- A setup screen for the podcast title, the questions and a target guest time per question.
+- Audio recording (audio only) with the results saved per podcast.
+- A settings page.
+- A test mode that works without the real microphones.
+
+## How it works
 
 1. The host creates a podcast: a title, a list of questions, and a target guest time per question. The list is fixed once the session starts.
-2. The app detects who is speaking and drives the stopwatch (rules below).
+2. The app detects who is speaking and drives the stopwatch.
 3. The host moves to the next question with a button or keyboard shortcut. Auto-advance is an optional setting.
 4. The audio and the results are saved in the podcast's folder.
 
-### Stopwatch rules
+### Stopwatch
 
 - Runs only while the guest speaks.
 - Freezes, and stays visible, when the guest stops.
@@ -59,9 +89,7 @@ Detection has two interchangeable strategies behind one interface. The tolerance
 1. **Channel strategy (primary).** Compares the level of each channel using an AudioWorklet. Used when the microphones arrive as separate channels.
 2. **Voice strategy (fallback, built in v1).** Uses pitch and simple spectral features on a single mixed channel. The host records a short enrollment sample. Speech that does not match the host is treated as the guest.
 
-### Setup check and strategy selection
-
-A guided setup check detects the audio setup and picks the strategy. The possible setups are:
+A guided setup check detects the audio setup and picks the strategy:
 
 - Two distinct channels: channel strategy.
 - Two identical channels: voice strategy.
@@ -69,9 +97,50 @@ A guided setup check detects the audio setup and picks the strategy. The possibl
 
 The strategy can be overridden manually in settings.
 
-### Audio requirements
-
 Browser echo cancellation, noise suppression and auto-gain must be turned off. They distort the level comparison.
+
+## Scope of v1
+
+In scope:
+
+- One host and one guest.
+- Turkish podcasts. The UI text is in Turkish.
+- Runs locally on a standard CPU only laptop.
+- Audio recording (audio only, no video).
+
+Out of scope:
+
+- Accounts or permissions.
+- Transcription.
+- A database.
+- Automated tests.
+- Zod or other runtime schema validation.
+- More than two speakers.
+
+## Tech stack
+
+Installed:
+
+- TypeScript
+- Next.js (App Router, React)
+- Tailwind CSS
+- ESLint
+- pnpm and pm2 for building and local hosting
+
+Planned, not installed yet:
+
+- Web Audio API with AudioWorklet (levels)
+- pitchy and Meyda, or similar small libraries (voice strategy). Not yet verified.
+- MediaRecorder with webm
+- Zustand for state
+
+
+## Project layout
+
+- `src/` holds the source code (Next.js App Router).
+- `public/` holds static files.
+- `ecosystem.config.cjs` is the pm2 configuration.
+- `settings.json` and `podcasts/` hold the app's data. They are in the project root and are git-ignored, so they are not part of the repository.
 
 ## Data and storage
 
@@ -82,26 +151,15 @@ Browser echo cancellation, noise suppression and auto-gain must be turned off. T
 
 ## Test mode
 
-A recorded audio file or the laptop microphone can stand in for the real microphones. Use it so development is never blocked by hardware.
+A recorded audio file or the laptop microphone can stand in for the real microphones. This way development is never blocked by hardware.
 
-## Tech stack
-
-- TypeScript, Next.js (React), Tailwind CSS
-- Web Audio API with AudioWorklet (levels)
-- pitchy and Meyda, or similar small libraries (voice strategy). Not yet verified, so confirm they work before relying on them.
-- MediaRecorder with webm
-- Zustand for state
-- pnpm build plus pm2 for local hosting
-- settings.json and the podcasts/ folder for data
-
-## Known risks and open issues
+## Known risks
 
 - **The microphone hardware is unverified.** The microphones are a wireless kit with one USB receiver. It is not known whether it outputs two separate channels or one mixed signal. This is why the voice strategy is part of v1. Two strategies guarantee there is always a path for any audio setup, but they do not guarantee that each path is accurate on the real hardware. Validation with the real microphone set is the final step of the project.
 - **The voice strategy is the weaker one.** Pitch and simple spectral features may struggle with similar voices, overlap or laughter. Expect to tune it.
 - **The receiver may process audio before the browser sees it** (noise gate, gain, ducking). This cannot be turned off from the browser.
-- **Not yet decided:** the UI language and the code layout. Ask before assuming either.
 
-## Related documents
+## Documents
 
 - **Voice Tracking System report** (`VoiceTrackingSystem_Rapor.docx`, Turkish). The current source of truth for the project.
 - **Proje Adımları** (`VoiceTrackingSystem_ProjeAdimlari.docx`, Turkish). The detailed project steps with sub-tasks, deliverables and dependencies. It splits the report's six steps into seven. Where the two differ, the report's high-level description still stands, and the difference should be raised with the team.
@@ -114,18 +172,8 @@ The task distribution (section 6 of the report) is intentionally empty for now.
 - A local database.
 - Possibly transcription.
 
-These are not part of v1. Do not build them unless asked.
+These are not part of v1.
 
-## Working rules for agents
+## Working with AI agents
 
-- **Do not assume, Ask.** If something is unclear or not covered here, ask the team before choosing for them.
-- **Stay inside the v1 scope.** Do not add accounts, a database, transcription, Zod or automated tests. Do not add features beyond what is described here.
-- **Ask before adding a dependency.** Prefer the browser's built-in APIs and small libraries.
-- **Keep the strategies interchangeable.** Both detection strategies sit behind the same interface and share the same tolerances. Do not special-case one of them in the stopwatch or the UI.
-- **Do not hardcode configurable values.** Tolerances, the yellow threshold, sensitivity and the other settings live in settings.json.
-- **Never turn browser audio processing on.** Echo cancellation, noise suppression and auto-gain stay off.
-- **Audio only.** Never record video.
-- **Do not assume anything about the real microphone hardware.** Use test mode until it is validated.
-- **Be careful with data.** Never overwrite an existing podcast folder. Sanitize titles for file names and separate duplicates.
-- No em dashes.
-- No tables unless absolutely necessary.
+Agents working on this project should read [AGENTS.md](AGENTS.md) first.
